@@ -1,6 +1,7 @@
 package com.artTech.wisewallet.controller;
 
 import com.artTech.wisewallet.dto.LoginRequest;
+import com.artTech.wisewallet.dto.UserDTO;
 import com.artTech.wisewallet.model.User;
 import com.artTech.wisewallet.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -23,15 +25,17 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         try {
             // Autentica o usuário
-            authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+            UserDetails userDetails = authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
             // Armazena o email na sessão
             session.setAttribute("email", loginRequest.getEmail());
+            System.out.println("Email armazenado na sessão: " + loginRequest.getEmail());
 
             // Retorna uma resposta JSON
             Map<String, Object> response = Map.of(
                     "message", "Login realizado com sucesso!",
-                    "authenticated", true
+                    "authenticated", true,
+                    "userDetails", userDetails
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -66,22 +70,22 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     public ResponseEntity<Map<String, Object>> getUser(HttpSession session) {
         // Recupera o email da sessão
         String email = (String) session.getAttribute("email");
-
-        User user = authService.getUserByEmail(email);
 
         if (email == null) {
             return ResponseEntity.status(401).body(Map.of("message", "Usuário não autenticado"));
         }
 
-        Map<String, Object> userData = Map.of(
-                "name", user.getName(),
-                "email", user.getEmail()
-        );
+        User user = authService.getUserByEmail(email);
 
-        return ResponseEntity.ok(userData);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of("message", "Usuário não encontrado"));
+        }
+
+        UserDTO userDTO = new UserDTO(user);
+        return ResponseEntity.ok(Map.of("user", userDTO));
     }
 }

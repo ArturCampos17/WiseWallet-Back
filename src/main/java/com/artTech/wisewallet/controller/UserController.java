@@ -2,6 +2,8 @@ package com.artTech.wisewallet.controller;
 
 import com.artTech.wisewallet.dto.UserDTO;
 import com.artTech.wisewallet.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,19 +23,50 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        System.out.println("Name recebido: " + userDTO.getName());
+        System.out.println("Endpoint /api/users acessado com os dados: " + userDTO);
 
-         if (userDTO.getBirthDate() == null) {
+        if (userDTO.getBirthDate() == null) {
+            System.out.println("Erro: birthDate não pode ser nulo");
             return ResponseEntity.badRequest().body("birthDate cannot be null");
         }
+
         try {
             UserDTO createdUser = userService.createUser(userDTO);
+            System.out.println("Usuário criado com sucesso: " + createdUser);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (RuntimeException ex) {
-            logger.error("Erro ao criar usuário: ", ex);
+            System.out.println("Erro ao criar usuário: " + ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<UserDTO> getUserProfile(HttpSession session) {
+        logger.info("Endpoint /api/users/profile acessado");
+
+        // Recupera o email da sessão
+        String email = (String) session.getAttribute("email");
+        if (email == null) {
+            logger.warn("Email não encontrado na sessão");
+            return ResponseEntity.status(401).body(null); // Usuário não autenticado
+        }
+
+        logger.info("Email recuperado da sessão: {}", email);
+
+        try {
+            UserDTO userDTO = userService.getAuthenticatedUser(email);
+            logger.info("Perfil do usuário retornado com sucesso: {}", userDTO);
+            return ResponseEntity.ok(userDTO);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar perfil do usuário: ", e);
+            return ResponseEntity.status(500).body(null); // Erro interno
+        }
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        UserDTO updatedUser = userService.updateAuthenticatedUser(userDTO, request);
+        return ResponseEntity.ok(updatedUser);
+    }
 
 }
