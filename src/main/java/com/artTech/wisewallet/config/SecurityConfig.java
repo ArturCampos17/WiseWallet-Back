@@ -14,7 +14,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Configuration  // ✅ Essa anotação estava faltando
+@Configuration
 public class SecurityConfig {
 
     @Bean
@@ -24,10 +24,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configura CORS
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/h2-console/**", // Libera o H2 Console
                                 "/api/**",        // Libera endpoints da API
                                 "/error",          // Libera o endpoint de erro
                                 "/users",
+                                "/profile",
                                 "/transaction"
                         ).permitAll()
                         .anyRequest().authenticated() // Requer autenticação para qualquer outra requisição

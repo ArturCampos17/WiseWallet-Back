@@ -35,10 +35,10 @@ public class UserDTO {
     private String email;
 
 
-//    @NotBlank(message = "Senha é obrigatória")
+    //    @NotBlank(message = "Senha é obrigatória")
 //    @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
 //    private String password;
-   // @JsonIgnore // Ignora este campo na serialização JSON
+    // @JsonIgnore // Ignora este campo na serialização JSON
     private String password;
 
     @Pattern(
@@ -214,6 +214,3 @@ public class UserDTO {
         this.cep = cep;
     }
 }
-
-
-
