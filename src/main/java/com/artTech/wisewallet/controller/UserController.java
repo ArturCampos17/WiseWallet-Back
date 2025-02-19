@@ -1,9 +1,9 @@
 package com.artTech.wisewallet.controller;
 
 import com.artTech.wisewallet.dto.UserDTO;
+import com.artTech.wisewallet.security.JwtService;
 import com.artTech.wisewallet.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,9 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
@@ -41,25 +44,33 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<UserDTO> getUserProfile(HttpSession session) {
+    public ResponseEntity<UserDTO> getUserProfile(@RequestHeader("Authorization") String authHeader) {
         logger.info("Endpoint /api/users/profile acessado");
 
-        // Recupera o email da sessão
-        String email = (String) session.getAttribute("email");
-        if (email == null) {
-            logger.warn("Email não encontrado na sessão");
-            return ResponseEntity.status(401).body(null); // Usuário não autenticado
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("Token ausente ou inválido");
+            return ResponseEntity.status(401).body(null);
         }
 
-        logger.info("Email recuperado da sessão: {}", email);
+
+        String token = authHeader.substring(7);
+        String email = jwtService.extractEmail(token);
+
+        // Valida o token
+        if (!jwtService.validateToken(token, email)) {
+            logger.warn("Token inválido ou expirado");
+            return ResponseEntity.status(401).body(null);
+        }
 
         try {
+
             UserDTO userDTO = userService.getAuthenticatedUser(email);
             logger.info("Perfil do usuário retornado com sucesso: {}", userDTO);
             return ResponseEntity.ok(userDTO);
         } catch (Exception e) {
             logger.error("Erro ao buscar perfil do usuário: ", e);
-            return ResponseEntity.status(500).body(null); // Erro interno
+            return ResponseEntity.status(500).body(null);
         }
     }
 

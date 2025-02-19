@@ -3,13 +3,11 @@ package com.artTech.wisewallet.controller;
 import com.artTech.wisewallet.dto.LoginRequest;
 import com.artTech.wisewallet.dto.UserDTO;
 import com.artTech.wisewallet.model.User;
+import com.artTech.wisewallet.security.JwtService;
 import com.artTech.wisewallet.service.AuthService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,21 +19,20 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private JwtService jwtService;
+
+
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // Autentica o usuário
-            UserDetails userDetails = authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
-
-            // Armazena o email na sessão
-            session.setAttribute("email", loginRequest.getEmail());
-            System.out.println("Email armazenado na sessão: " + loginRequest.getEmail());
-
-            // Retorna uma resposta JSON
+            // Autentica o usuário e gera o token JWT
+            String token = authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+            // Retorna uma resposta JSON com o token
             Map<String, Object> response = Map.of(
                     "message", "Login realizado com sucesso!",
                     "authenticated", true,
-                    "userDetails", userDetails
+                    "token", token
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -49,10 +46,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
-        // Invalida a sessão
+
         session.invalidate();
 
-        // Retorna uma resposta JSON
         Map<String, Object> response = Map.of(
                 "message", "Logout realizado com sucesso!",
                 "authenticated", false
@@ -60,19 +56,20 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/check-auth")
-    public ResponseEntity<Map<String, Boolean>> checkAuth(@CookieValue(value = "auth_cookie", required = false) String authCookie) {
-        boolean isAuthenticated = authCookie != null && !authCookie.isEmpty();
-
-        // Retorna o estado de autenticação como JSON
-        Map<String, Boolean> response = Map.of("authenticated", isAuthenticated);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Boolean>> checkAuth(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            String email = jwtService.extractEmail(token);
+            boolean isValid = jwtService.validateToken(token, email);
+            return ResponseEntity.ok(Map.of("authenticated", isValid));
+        }
+        return ResponseEntity.ok(Map.of("authenticated", false));
     }
 
     @GetMapping("/users")
     public ResponseEntity<Map<String, Object>> getUser(HttpSession session) {
-        // Recupera o email da sessão
+
         String email = (String) session.getAttribute("email");
 
         if (email == null) {

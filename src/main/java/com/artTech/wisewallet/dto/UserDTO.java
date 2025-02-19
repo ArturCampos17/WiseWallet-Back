@@ -1,7 +1,6 @@
 package com.artTech.wisewallet.dto;
 
 import com.artTech.wisewallet.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
@@ -34,11 +33,6 @@ public class UserDTO {
     @Email(message = "Email inválido")
     private String email;
 
-
-    //    @NotBlank(message = "Senha é obrigatória")
-//    @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
-//    private String password;
-    // @JsonIgnore // Ignora este campo na serialização JSON
     private String password;
 
     @Pattern(
@@ -73,7 +67,7 @@ public class UserDTO {
     @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP inválido")
     private String cep;
 
-    // Construtor com campos obrigatórios
+
     public UserDTO(User user) {
         this.name = name;
         this.lastName = lastName;
@@ -87,7 +81,6 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    // Getters e Setters
     public String getName() { return name; }
 
     public void setName(String name) {

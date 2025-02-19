@@ -43,11 +43,6 @@ public class User {
     private String country;
     private String cep;
 
-//    // Relacionamento com transações (pagador)
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "payer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Transaction> transactions = new ArrayList<>();
-
     public User() {
     }
 
