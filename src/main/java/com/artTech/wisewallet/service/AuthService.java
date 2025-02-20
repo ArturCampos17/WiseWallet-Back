@@ -32,7 +32,7 @@ public class AuthService implements UserDetailsService {
         }
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
-                user.getPassword(), // Senha criptografada
+                user.getPassword(),
                 new ArrayList<>()
         );
     }
@@ -49,7 +49,10 @@ public class AuthService implements UserDetailsService {
             throw new RuntimeException("Credenciais inválidas");
         }
 
-        // Gera o token JWT
-        return jwtService.generateToken(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        return jwtService.generateToken(email, user.getId());
     }
 }

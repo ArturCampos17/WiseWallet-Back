@@ -38,9 +38,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // Remove "Bearer "
+            jwt = authorizationHeader.substring(7);
             try {
-                email = jwtService.extractEmail(jwt); // Extrai o email do token
+                email = jwtService.extractEmail(jwt);
             } catch (Exception e) {
                 System.out.println("Token inválido: " + e.getMessage());
             }

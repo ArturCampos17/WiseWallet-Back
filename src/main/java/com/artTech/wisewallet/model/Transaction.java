@@ -1,117 +1,162 @@
-//package com.artTech.wisewallet.model;
+package com.artTech.wisewallet.model;
+
+import com.artTech.wisewallet.dto.TransactionDTO;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "transactions")
+
+public class Transaction {
+
+//    description String
 //
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-//import jakarta.persistence.*;
-//import java.math.BigDecimal;
-//import java.time.LocalDate;
+//    recipient String
 //
-//@Entity
-//@Table(name = "transactions")
-//public class Transaction {
+//    category String
 //
-//    public enum TransactionType {
-//        CREDIT, DEBIT, PIX
-//    }
+//    type - PIX-DEBITO-CREDITO-BOLETO-DINEHIRO
 //
-//    public enum TransactionStatus {
-//        PAID, PENDING, CANCELED
-//    }
+//    stats - PAGO -PENDENTE - CANCELADO - ATRASADO
 //
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+//    data localDate
 //
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User payer; // "pagador" -> "payer"
-//
-//    private String recipient; // "recebedor" -> "recipient"
-//    private String category; // "categoria" -> "category"
-//
-//    @Enumerated(EnumType.STRING)
-//    private TransactionType type; // "tipo" -> "type"
-//
-//    @Enumerated(EnumType.STRING)
-//    private TransactionStatus status; // "situacao" -> "status"
-//
-//    private String description; // "descricao" -> "description"
-//
-//    private BigDecimal amount; // "valor" -> "amount"
-//
-//    private LocalDate createdAt;
-//
-//    private LocalDate date; // "data" -> "date"
-//
-//    public Transaction() {
-//        this.date = LocalDate.now();
-//    }
-//
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public User getPayer() {
-//        return payer;
-//    }
-//
-//    public void setPayer(User payer) {
-//        this.payer = payer;
-//    }
-//
-//    public String getRecipient() {
-//        return recipient;
-//    }
-//
-//    public void setRecipient(String recipient) {
-//        this.recipient = recipient;
-//    }
-//
-//    public String getCategory() {
-//        return category;
-//    }
-//
-//    public void setCategory(String category) {
-//        this.category = category;
-//    }
-//
-//    public TransactionType getType() {
-//        return type;
-//    }
-//
-//    public void setType(TransactionType type) {
-//        this.type = type;
-//    }
-//
-//    public TransactionStatus getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(TransactionStatus status) {
-//        this.status = status;
-//    }
-//
-//    public LocalDate getDate() {
-//        return date;
-//    }
-//
-//    public void setDate(LocalDate date) {
-//        this.date = date;
-//    }
-//
-//    public BigDecimal getAmount() {
-//        return amount;
-//    }
-//
-//    public void setAmount(BigDecimal amount) {
-//        this.amount = amount;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//}
+//    valor BigDecimal
+
+
+
+    public enum TransactionType {
+        BOLETO, CREDITO, DEBITO,DINHEIRO, PIX
+    }
+
+    public enum TransactionStats {
+        ATRASADO, CANCELADO, PAGO, PENDENTE
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String description;
+
+    private String recipient;
+
+    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionStats stats;
+
+    private BigDecimal amount;
+
+
+    private LocalDate date;
+
+    @ManyToOne
+    private User user;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+
+    public static Transaction fromDTO(TransactionDTO dto, User user) {
+        Transaction transaction = new Transaction();
+        transaction.setDescription(dto.getDescription());
+        transaction.setRecipient(dto.getRecipient());
+        transaction.setCategory(dto.getCategory());
+        transaction.setType(dto.getType());
+        transaction.setStats(dto.getStats());
+        transaction.setDate(dto.getDate());
+        transaction.setAmount(dto.getAmount());
+        transaction.setUser(user);
+        return transaction;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
+    public TransactionStats getStats() {
+        return stats;
+    }
+
+    public void setStats(TransactionStats stats) {
+        this.stats = stats;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+}

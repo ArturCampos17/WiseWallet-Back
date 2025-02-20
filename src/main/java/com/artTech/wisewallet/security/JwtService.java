@@ -17,9 +17,15 @@ public class JwtService {
 
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public String generateToken(String email) {
+    public String generateToken(String email, Long userId) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
         return createToken(claims, email);
+    }
+
+    public Long extractUserId(String token) {
+        final Claims claims = extractAllClaims(token);
+        return ((Number) claims.get("userId")).longValue();
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -27,7 +33,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Expira em 10 horas
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 //.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .signWith(SECRET_KEY)
                 .compact();
