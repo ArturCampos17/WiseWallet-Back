@@ -1,6 +1,8 @@
 package com.artTech.wisewallet.model;
 
 import com.artTech.wisewallet.dto.TransactionDTO;
+import com.artTech.wisewallet.dto.TransactionResponseDTO;
+import com.artTech.wisewallet.dto.UserResponseDTO;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -87,6 +89,28 @@ public class Transaction {
         return transaction;
     }
 
+    public TransactionResponseDTO toResponseDTO() {
+        TransactionResponseDTO dto = new TransactionResponseDTO();
+        dto.setId(this.id);
+        dto.setDescription(this.description);
+        dto.setRecipient(this.recipient);
+        dto.setCategory(this.category);
+        dto.setPaymentType(this.paymentType);
+        dto.setStats(this.stats);
+        dto.setType(this.type);
+        dto.setAmount(this.amount);
+        dto.setDate(this.date);
+
+
+        UserResponseDTO userDTO = new UserResponseDTO();
+        userDTO.setId(this.user.getId());
+        userDTO.setName(this.user.getName());
+        userDTO.setEmail(this.user.getEmail());
+        dto.setUser(userDTO);
+
+        dto.setCreatedAt(this.createdAt);
+        return dto;
+    }
     public Long getId() {
         return id;
     }

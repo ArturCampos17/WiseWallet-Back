@@ -46,14 +46,6 @@ public class User {
     public User() {
     }
 
-    // Getters e Setters (mantenha todos os existentes e adicione abaixo o novo)
-//    public List<Transaction> getTransactions() {
-//        return transactions;
-//    }
-//
-//    public void setTransactions(List<Transaction> transactions) {
-//        this.transactions = transactions;
-//    }
 
     // Getters e Setters
     public Long getId() {

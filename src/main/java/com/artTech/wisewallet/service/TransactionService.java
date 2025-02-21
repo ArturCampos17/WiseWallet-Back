@@ -1,6 +1,7 @@
 package com.artTech.wisewallet.service;
 
 import com.artTech.wisewallet.dto.TransactionDTO;
+import com.artTech.wisewallet.dto.TransactionResponseDTO;
 import com.artTech.wisewallet.model.Transaction;
 import com.artTech.wisewallet.model.User;
 import com.artTech.wisewallet.repository.TransactionRepository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.artTech.wisewallet.security.JwtService;
 
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class TransactionService {
 
@@ -23,7 +24,7 @@ public class TransactionService {
     @Autowired
     private JwtService jwtService;
 
-    public Transaction createTransaction(TransactionDTO transactionDTO, String token) {
+    public TransactionResponseDTO createTransaction(TransactionDTO transactionDTO, String token) {
 
         if (token == null || !token.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Token inválido ou ausente.");
@@ -39,7 +40,10 @@ public class TransactionService {
 
         Transaction transaction = Transaction.fromDTO(transactionDTO, user);
 
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // Retorna o DTO de resposta
+        return savedTransaction.toResponseDTO();
     }
 
     public List<Transaction> getTransactionsByUser(String token) {
