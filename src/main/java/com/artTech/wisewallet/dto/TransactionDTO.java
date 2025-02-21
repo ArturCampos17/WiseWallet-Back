@@ -22,6 +22,9 @@ public class TransactionDTO {
     private String category;
 
     @NotNull(message = "O tipo é obrigatório")
+    private Transaction.TransactionPaymentType paymentType;
+
+    @NotNull(message = " o tipo é obrigadorio")
     private Transaction.TransactionType type;
 
     @NotNull(message = "O status é obrigatório")
@@ -56,6 +59,14 @@ public class TransactionDTO {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Transaction.TransactionPaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(Transaction.TransactionPaymentType paymentType) {
+        this.paymentType = paymentType;
     }
 
     public Transaction.TransactionType getType() {

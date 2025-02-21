@@ -20,7 +20,7 @@ public class Transaction {
 //
 //    category String
 //
-//    type - PIX-DEBITO-CREDITO-BOLETO-DINEHIRO
+//    paymentType - PIX-DEBITO-CREDITO-BOLETO-DINEHIRO
 //
 //    stats - PAGO -PENDENTE - CANCELADO - ATRASADO
 //
@@ -30,12 +30,16 @@ public class Transaction {
 
 
 
-    public enum TransactionType {
+    public enum TransactionPaymentType {
         BOLETO, CREDITO, DEBITO,DINHEIRO, PIX
     }
 
     public enum TransactionStats {
         ATRASADO, CANCELADO, PAGO, PENDENTE
+    }
+
+    public enum TransactionType {
+        ENTRADA, SAIDA
     }
 
     @Id
@@ -49,10 +53,13 @@ public class Transaction {
     private String category;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType type;
+    private TransactionPaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
     private TransactionStats stats;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
 
     private BigDecimal amount;
 
@@ -71,6 +78,7 @@ public class Transaction {
         transaction.setDescription(dto.getDescription());
         transaction.setRecipient(dto.getRecipient());
         transaction.setCategory(dto.getCategory());
+        transaction.setPaymentType(dto.getPaymentType());
         transaction.setType(dto.getType());
         transaction.setStats(dto.getStats());
         transaction.setDate(dto.getDate());
@@ -109,6 +117,14 @@ public class Transaction {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public TransactionPaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(TransactionPaymentType paymentType) {
+        this.paymentType = paymentType;
     }
 
     public TransactionType getType() {
