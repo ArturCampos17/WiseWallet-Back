@@ -24,7 +24,7 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
         System.out.println("Endpoint /api/users acessado com os dados: " + userDTO);
 
