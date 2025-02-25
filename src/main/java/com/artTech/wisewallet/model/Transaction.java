@@ -2,10 +2,9 @@ package com.artTech.wisewallet.model;
 
 import com.artTech.wisewallet.dto.TransactionDTO;
 import com.artTech.wisewallet.dto.TransactionResponseDTO;
-import com.artTech.wisewallet.dto.UserResponseDTO;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,32 +15,43 @@ import java.time.LocalDateTime;
 
 public class Transaction {
 
-//    description String
-//
-//    recipient String
-//
-//    category String
-//
-//    paymentType - PIX-DEBITO-CREDITO-BOLETO-DINEHIRO
-//
-//    stats - PAGO -PENDENTE - CANCELADO - ATRASADO
-//
-//    data localDate
-//
-//    valor BigDecimal
-
-
-
     public enum TransactionPaymentType {
-        BOLETO, CREDITO, DEBITO,DINHEIRO, PIX
+        BOLETO, CREDITO, DEBITO,DINHEIRO, PIX;
+        @Override
+        public String toString() {
+            return this.name();
+        }
+
+        @JsonCreator
+        public static TransactionPaymentType fromString(String value) {
+            return TransactionPaymentType.valueOf(value.toUpperCase());
+        }
     }
 
     public enum TransactionStats {
-        ATRASADO, CANCELADO, PAGO, PENDENTE
+        ATRASADO, CANCELADO, PAGO, PENDENTE;
+        @Override
+        public String toString() {
+            return this.name();
+        }
+
+        @JsonCreator
+        public static TransactionPaymentType fromString(String value) {
+            return TransactionPaymentType.valueOf(value.toUpperCase());
+        }
     }
 
     public enum TransactionType {
-        ENTRADA, SAIDA
+        ENTRADA, SAIDA;
+        @Override
+        public String toString() {
+            return this.name();
+        }
+
+        @JsonCreator
+        public static TransactionPaymentType fromString(String value) {
+            return TransactionPaymentType.valueOf(value.toUpperCase());
+        }
     }
 
     @Id
@@ -75,16 +85,17 @@ public class Transaction {
     private LocalDateTime createdAt;
 
 
-    public static Transaction fromDTO(TransactionDTO dto, User user) {
+    public static Transaction fromDTO(TransactionDTO transactionDTO, User user) {
         Transaction transaction = new Transaction();
-        transaction.setDescription(dto.getDescription());
-        transaction.setRecipient(dto.getRecipient());
-        transaction.setCategory(dto.getCategory());
-        transaction.setPaymentType(dto.getPaymentType());
-        transaction.setType(dto.getType());
-        transaction.setStats(dto.getStats());
-        transaction.setDate(dto.getDate());
-        transaction.setAmount(dto.getAmount());
+        transaction.setDescription(transactionDTO.getDescription());
+        transaction.setAmount(transactionDTO.getAmount());
+        transaction.setDate(transactionDTO.getDate());
+        transaction.setCategory(transactionDTO.getCategory());
+        transaction.setPaymentType(transactionDTO.getPaymentType());
+        transaction.setStats(transactionDTO.getStats());
+        transaction.setType(transactionDTO.getType());
+        transaction.setRecipient(transactionDTO.getRecipient());
+
         transaction.setUser(user);
         return transaction;
     }
@@ -93,24 +104,20 @@ public class Transaction {
         TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setId(this.id);
         dto.setDescription(this.description);
-        dto.setRecipient(this.recipient);
-        dto.setCategory(this.category);
-        dto.setPaymentType(this.paymentType);
-        dto.setStats(this.stats);
-        dto.setType(this.type);
         dto.setAmount(this.amount);
         dto.setDate(this.date);
-
-
-        UserResponseDTO userDTO = new UserResponseDTO();
-        userDTO.setId(this.user.getId());
-        userDTO.setName(this.user.getName());
-        userDTO.setEmail(this.user.getEmail());
-        dto.setUser(userDTO);
-
+        dto.setStats(this.stats);
+        dto.setType(this.type);
+        dto.setPaymentType(this.paymentType);
+        dto.setCategory(this.category);
+        dto.setRecipient(this.recipient);
         dto.setCreatedAt(this.createdAt);
+
+        dto.setId(this.user.getId());
         return dto;
     }
+
+
     public Long getId() {
         return id;
     }

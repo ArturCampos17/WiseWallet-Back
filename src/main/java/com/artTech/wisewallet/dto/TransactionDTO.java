@@ -1,41 +1,77 @@
 package com.artTech.wisewallet.dto;
 
 import com.artTech.wisewallet.model.Transaction;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TransactionDTO {
 
+    @JsonProperty("description")
     @NotBlank(message = "A descrição é obrigatória")
     private String description;
 
+    @JsonProperty("recipient")
     @NotBlank(message = "O destinatário é obrigatório")
     private String recipient;
 
+    @JsonProperty("category")
     @NotBlank(message = "A categoria é obrigatória")
     private String category;
 
-    @NotNull(message = "O tipo é obrigatório")
+    @JsonProperty("paymentType")
+    @NotNull(message = "O tipo de pagamento é obrigatório")
     private Transaction.TransactionPaymentType paymentType;
 
-    @NotNull(message = " o tipo é obrigadorio")
+    @JsonProperty("type")
+    @NotNull(message = "O tipo é obrigatório")
     private Transaction.TransactionType type;
 
+    @JsonProperty("stats")
     @NotNull(message = "O status é obrigatório")
     private Transaction.TransactionStats stats;
 
+    @JsonProperty("date")
     @NotNull(message = "A data é obrigatória")
     private LocalDate date;
 
+    @JsonProperty("amount")
     @NotNull(message = "O valor é obrigatório")
     @Positive(message = "O valor deve ser maior que zero")
     private BigDecimal amount;
+
+    public TransactionDTO() {
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "description='" + description + '\'' +
+                ", recipient='" + recipient + '\'' +
+                ", category='" + category + '\'' +
+                ", paymentType=" + paymentType +
+                ", type=" + type +
+                ", stats=" + stats +
+                ", date=" + date +
+                ", amount=" + amount +
+                '}';
+    }
+
+
+    public TransactionDTO(Transaction transaction) {
+        this.description = transaction.getDescription();
+        this.recipient = transaction.getRecipient();
+        this.category = transaction.getCategory();
+        this.paymentType = transaction.getPaymentType();
+        this.type = transaction.getType();
+        this.stats = transaction.getStats();
+        this.date = transaction.getDate();
+        this.amount = transaction.getAmount();
+    }
 
     public String getDescription() {
         return description;
