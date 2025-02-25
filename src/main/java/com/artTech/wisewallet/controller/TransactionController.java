@@ -97,4 +97,30 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        try {
+            transactionService.deleteTransaction(id, token);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Transação deletada com sucesso!");
+
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 Bad Request
+        } catch (Exception e) {
+
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Erro ao deletar transação: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+        }
+    }
+
+
 }

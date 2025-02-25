@@ -83,4 +83,27 @@ public class TransactionService {
 
         transactionRepository.save(existingTransaction);
     }
+
+    public void deleteTransaction(Long id, String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido ou ausente.");
+        }
+
+        String jwtToken = token.substring(7);
+        Long userId = jwtService.extractUserId(jwtToken);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Transaction existingTransaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
+
+
+        if (!existingTransaction.getUser().getId().equals(user.getId())) {
+            throw new SecurityException("Você não tem permissão para excluir esta transação.");
+        }
+
+
+        transactionRepository.delete(existingTransaction);
+    }
 }
