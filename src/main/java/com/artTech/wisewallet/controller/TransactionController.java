@@ -27,47 +27,30 @@ public class TransactionController {
     public ResponseEntity<Map<String, String>> createTransaction(
             @RequestBody TransactionDTO transactionDTO,
             @RequestHeader("Authorization") String token) {
-        try {
-            System.out.println("TransactionDTO recebido: " + transactionDTO);
-
-            transactionService.createTransaction(transactionDTO, token);
-
-
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Transação criada com sucesso!");
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        } catch (Exception e) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro ao criar transação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        System.out.println("TransactionDTO recebido: " + transactionDTO);
+        return processTransaction(() -> transactionService.createTransaction(transactionDTO, token),
+                "Transação criada com sucesso!",
+                "Erro ao criar transação");
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionDTO>> getUserTransactions(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String token = authHeader.substring(7);
         String email = jwtService.extractEmail(token);
 
         if (!jwtService.validateToken(token, email)) {
-            return ResponseEntity.status(401).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
             List<TransactionDTO> transactions = transactionService.getUserTransactions(email);
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -76,75 +59,62 @@ public class TransactionController {
             @PathVariable Long id,
             @RequestBody TransactionDTO transactionDTO,
             @RequestHeader("Authorization") String token) {
-        try {
-            System.out.println("Atualizando transação com ID: " + id);
-            transactionService.updateTransaction(id, transactionDTO, token);
+        System.out.println("Atualizando transação com ID: " + id);
+        return processTransaction(() -> transactionService.updateTransaction(id, transactionDTO, token),
+                "Transação atualizada com sucesso!",
+                "Erro ao atualizar transação");
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteTransaction(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        System.out.println("Recebida requisição para deletar transação com ID: " + id);
+        return processTransaction(() -> transactionService.deleteTransaction(id, token), "Transação deletada com sucesso!", "Erro ao deletar transação");
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Map<String, String>> cancelTransaction(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        System.out.println("Recebida requisição para cancelar transação com ID: " + id);
+        return processTransaction(() -> transactionService.cancelTransaction(id, token), "Transação cancelada com sucesso!", "Erro ao cancelar transação");
+    }
+
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<Map<String, String>> reopenTransaction(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        System.out.println("Recebida requisição para reabrir transação com ID: " + id);
+        return processTransaction(() -> transactionService.reopenTransaction(id, token), "Transação reaberta com sucesso!", "Erro ao reabrir transação");
+    }
+
+    @PatchMapping("/{id}/pay")
+    public ResponseEntity<Map<String, String>> payTransaction(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        System.out.println("Recebida requisição para pagar transação com ID: " + id);
+        return processTransaction(() -> transactionService.payTransaction(id, token), "Transação paga com sucesso!", "Erro ao pagar transação");
+    }
+
+
+    //CRIADO PARA EVITAR DUPLICIDADE NO CODIGO DAS MENSAGENS
+    private ResponseEntity<Map<String, String>> processTransaction(Runnable transactionAction, String successMessage, String errorMessage) {
+        try {
+            transactionAction.run();
 
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Transação atualizada com sucesso!");
-
+            response.put("message", successMessage);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro ao atualizar transação: " + e.getMessage());
+            errorResponse.put("message", errorMessage + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
-    @PatchMapping("/{id}/cancel")
-    public ResponseEntity<Map<String,String>> cancelTransaction(
-           @PathVariable Long id,
-
-           @RequestHeader("Authorization") String token) {
-        System.out.println("Recebida requisição para cancelar transação com ID: " + id);
-
-        try {
-            transactionService.cancelTransaction(id,token);
-
-            Map<String,String> response = new HashMap<>();
-            response.put("message", "Transação cancelada com sucesso!");
-            return ResponseEntity.ok(response);
-        }  catch (IllegalArgumentException e) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse); // 400 Bad Request
-        } catch (Exception e) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro ao cancelar transação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse); // 500 Internal Server Error
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransaction(
-            @PathVariable Long id,
-            @RequestHeader("Authorization") String token) {
-        try {
-            transactionService.deleteTransaction(id, token);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Transação deletada com sucesso!");
-
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (Exception e) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro ao deletar transação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 }

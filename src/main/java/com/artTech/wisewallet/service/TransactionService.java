@@ -112,6 +112,45 @@ public class TransactionService {
         System.out.println("Transação ID {} foi cancelada com sucesso." +  transaction.getId());
     }
 
+    public void reopenTransaction(Long id, String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido ou ausente.");
+        }
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transação não encontrada."));
+
+        if (!(transaction.getStats() == Transaction.TransactionStats.CANCELADO ||
+                transaction.getStats() == Transaction.TransactionStats.PAGO)) {
+            throw new IllegalArgumentException("Só é possível reabrir transações canceladas ou pagas.");
+        }
+
+        transaction.setStats(Transaction.TransactionStats.PENDENTE);
+        transactionRepository.save(transaction);
+
+        System.out.println("Transação ID " + transaction.getId() + " foi reaberta com sucesso.");
+    }
+
+    public void payTransaction(Long id, String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido ou ausente.");
+        }
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transação não encontrada."));
+
+
+        if (!(transaction.getStats() == Transaction.TransactionStats.ATRASADO ||
+                transaction.getStats() == Transaction.TransactionStats.PENDENTE)) {
+            throw new IllegalArgumentException("Só é possível pagar transações que estão atrasadas ou pendentes.");
+        }
+
+        transaction.setStats(Transaction.TransactionStats.PAGO);
+        transactionRepository.save(transaction);
+
+        System.out.println("Transação ID {} foi paga com sucesso." + transaction.getId());
+    }
+
     public void deleteTransaction(Long id, String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Token inválido ou ausente.");
