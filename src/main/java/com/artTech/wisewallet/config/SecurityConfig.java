@@ -37,6 +37,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/check-auth",
                                 "/api/users/register",
+                                "/api/transactions/**",
                                 //"api/users",
                                 "/error"
                         ).permitAll()

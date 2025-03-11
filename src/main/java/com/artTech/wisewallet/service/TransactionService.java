@@ -84,6 +84,34 @@ public class TransactionService {
         transactionRepository.save(existingTransaction);
     }
 
+    public void cancelTransaction(Long id, String token) {
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido ou ausente.");
+        }
+
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transação não encontrada."));
+
+
+        if (transaction.getStats() == Transaction.TransactionStats.CANCELADO) {
+            throw new IllegalArgumentException("A transação já está cancelada.");
+        }
+
+        if (transaction.getStats() == Transaction.TransactionStats.PAGO) {
+            throw new IllegalArgumentException("Não é possível cancelar uma transação já paga.");
+        }
+
+
+        transaction.setStats(Transaction.TransactionStats.CANCELADO);
+
+
+        transactionRepository.save(transaction);
+
+        System.out.println("Transação ID {} foi cancelada com sucesso." +  transaction.getId());
+    }
+
     public void deleteTransaction(Long id, String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Token inválido ou ausente.");

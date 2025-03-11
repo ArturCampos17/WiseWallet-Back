@@ -98,6 +98,32 @@ public class TransactionController {
         }
     }
 
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Map<String,String>> cancelTransaction(
+           @PathVariable Long id,
+
+           @RequestHeader("Authorization") String token) {
+        System.out.println("Recebida requisição para cancelar transação com ID: " + id);
+
+        try {
+            transactionService.cancelTransaction(id,token);
+
+            Map<String,String> response = new HashMap<>();
+            response.put("message", "Transação cancelada com sucesso!");
+            return ResponseEntity.ok(response);
+        }  catch (IllegalArgumentException e) {
+
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse); // 400 Bad Request
+        } catch (Exception e) {
+
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Erro ao cancelar transação: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse); // 500 Internal Server Error
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(
             @PathVariable Long id,
@@ -108,19 +134,17 @@ public class TransactionController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Transação deletada com sucesso!");
 
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Erro ao deletar transação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
 }

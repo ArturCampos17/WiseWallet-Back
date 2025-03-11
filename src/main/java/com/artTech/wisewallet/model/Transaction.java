@@ -36,8 +36,8 @@ public class Transaction {
         }
 
         @JsonCreator
-        public static TransactionPaymentType fromString(String value) {
-            return TransactionPaymentType.valueOf(value.toUpperCase());
+        public static TransactionStats fromString(String value) {
+            return TransactionStats.valueOf(value.toUpperCase());
         }
     }
 
@@ -49,8 +49,8 @@ public class Transaction {
         }
 
         @JsonCreator
-        public static TransactionPaymentType fromString(String value) {
-            return TransactionPaymentType.valueOf(value.toUpperCase());
+        public static TransactionType fromString(String value) {
+            return TransactionType.valueOf(value.toUpperCase());
         }
     }
 
