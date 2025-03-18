@@ -70,7 +70,8 @@ public class TransactionController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
         System.out.println("Recebida requisição para deletar transação com ID: " + id);
-        return processTransaction(() -> transactionService.deleteTransaction(id, token), "Transação deletada com sucesso!", "Erro ao deletar transação");
+        return processTransaction(() -> transactionService.deleteTransaction(id, token),
+                "Transação deletada com sucesso!", "Erro ao deletar transação");
     }
 
     @PatchMapping("/{id}/cancel")
@@ -78,7 +79,8 @@ public class TransactionController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
         System.out.println("Recebida requisição para cancelar transação com ID: " + id);
-        return processTransaction(() -> transactionService.cancelTransaction(id, token), "Transação cancelada com sucesso!", "Erro ao cancelar transação");
+        return processTransaction(() -> transactionService.cancelTransaction(id, token),
+                "Transação cancelada com sucesso!", "Erro ao cancelar transação");
     }
 
     @PatchMapping("/{id}/reopen")
@@ -86,7 +88,8 @@ public class TransactionController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
         System.out.println("Recebida requisição para reabrir transação com ID: " + id);
-        return processTransaction(() -> transactionService.reopenTransaction(id, token), "Transação reaberta com sucesso!", "Erro ao reabrir transação");
+        return processTransaction(() -> transactionService.reopenTransaction(id, token),
+                "Transação reaberta com sucesso!", "Erro ao reabrir transação");
     }
 
     @PatchMapping("/{id}/pay")
@@ -94,9 +97,9 @@ public class TransactionController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
         System.out.println("Recebida requisição para pagar transação com ID: " + id);
-        return processTransaction(() -> transactionService.payTransaction(id, token), "Transação paga com sucesso!", "Erro ao pagar transação");
+        return processTransaction(() -> transactionService.payTransaction(id, token),
+                "Transação paga com sucesso!", "Erro ao pagar transação");
     }
-
 
     //CRIADO PARA EVITAR DUPLICIDADE NO CODIGO DAS MENSAGENS
     private ResponseEntity<Map<String, String>> processTransaction(Runnable transactionAction, String successMessage, String errorMessage) {
