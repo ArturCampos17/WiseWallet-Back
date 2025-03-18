@@ -11,6 +11,10 @@ import java.time.LocalDate;
 
 public class TransactionDTO {
 
+
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("description")
     @NotBlank(message = "A descrição é obrigatória")
     private String description;
@@ -50,6 +54,7 @@ public class TransactionDTO {
     @Override
     public String toString() {
         return "TransactionDTO{" +
+                "id='" + id + '\'' +
                 "description='" + description + '\'' +
                 ", recipient='" + recipient + '\'' +
                 ", category='" + category + '\'' +
@@ -63,6 +68,7 @@ public class TransactionDTO {
 
 
     public TransactionDTO(Transaction transaction) {
+        this.id = transaction.getId();
         this.description = transaction.getDescription();
         this.recipient = transaction.getRecipient();
         this.category = transaction.getCategory();
@@ -72,6 +78,10 @@ public class TransactionDTO {
         this.date = transaction.getDate();
         this.amount = transaction.getAmount();
     }
+
+    public Long getId() {return id;}
+
+    public void setId(Long id) {  this.id = id; }
 
     public String getDescription() {
         return description;

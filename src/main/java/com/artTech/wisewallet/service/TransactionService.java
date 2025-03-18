@@ -71,6 +71,7 @@ public class TransactionService {
             throw new SecurityException("Você não tem permissão para atualizar esta transação.");
         }
 
+
         existingTransaction.setDescription(transactionDTO.getDescription());
         existingTransaction.setRecipient(transactionDTO.getRecipient());
         existingTransaction.setCategory(transactionDTO.getCategory());
