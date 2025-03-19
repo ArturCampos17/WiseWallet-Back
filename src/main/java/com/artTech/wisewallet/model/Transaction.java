@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
-
 public class Transaction {
 
+    // Enumerações (mantidas como estão)
     public enum TransactionPaymentType {
-        BOLETO, CREDITO, DEBITO,DINHEIRO, PIX;
+        BOLETO, CREDITO, DEBITO, DINHEIRO, PIX;
+
         @Override
         public String toString() {
             return this.name();
@@ -30,6 +31,7 @@ public class Transaction {
 
     public enum TransactionStats {
         ATRASADO, CANCELADO, PAGO, PENDENTE;
+
         @Override
         public String toString() {
             return this.name();
@@ -43,6 +45,7 @@ public class Transaction {
 
     public enum TransactionType {
         ENTRADA, SAIDA;
+
         @Override
         public String toString() {
             return this.name();
@@ -54,6 +57,7 @@ public class Transaction {
         }
     }
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,7 +66,9 @@ public class Transaction {
 
     private String recipient;
 
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category", nullable = false)
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     private TransactionPaymentType paymentType;
@@ -75,22 +81,25 @@ public class Transaction {
 
     private BigDecimal amount;
 
-
     private LocalDate date;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    // Construtor padrão
+    public Transaction() {}
 
-    public static Transaction fromDTO(TransactionDTO transactionDTO, User user) {
+
+    public static Transaction fromDTO(TransactionDTO transactionDTO, User user, Category category) {
         Transaction transaction = new Transaction();
         transaction.setDescription(transactionDTO.getDescription());
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setDate(transactionDTO.getDate());
-        transaction.setCategory(transactionDTO.getCategory());
+        transaction.setCategory(category);
         transaction.setPaymentType(transactionDTO.getPaymentType());
         transaction.setStats(transactionDTO.getStats());
         transaction.setType(transactionDTO.getType());
@@ -109,13 +118,19 @@ public class Transaction {
         dto.setStats(this.stats);
         dto.setType(this.type);
         dto.setPaymentType(this.paymentType);
-        dto.setCategory(this.category);
+
+        if (this.category != null) {
+            dto.setCategoryId(this.category.getId());
+            dto.setCategoryName(this.category.getName());
+        }
+
         dto.setRecipient(this.recipient);
         dto.setCreatedAt(this.createdAt);
 
         dto.setId(this.user.getId());
         return dto;
     }
+
 
 
     public Long getId() {
@@ -142,13 +157,14 @@ public class Transaction {
         this.recipient = recipient;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
+
 
     public TransactionPaymentType getPaymentType() {
         return paymentType;

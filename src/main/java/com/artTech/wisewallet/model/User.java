@@ -2,6 +2,7 @@ package com.artTech.wisewallet.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
@@ -16,6 +17,8 @@ public class User {
 
     private String name;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Category> categories;
 
     private String lastName;
 
@@ -174,5 +177,13 @@ public class User {
 
     public void cep(String cep) {
         this.cep = cep;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

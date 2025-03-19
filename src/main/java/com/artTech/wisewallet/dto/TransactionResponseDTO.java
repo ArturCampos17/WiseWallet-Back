@@ -1,5 +1,6 @@
 package com.artTech.wisewallet.dto;
 
+import com.artTech.wisewallet.model.Category;
 import com.artTech.wisewallet.model.Transaction;
 
 import java.math.BigDecimal;
@@ -11,7 +12,8 @@ public class TransactionResponseDTO {
     private Long id;
     private String description;
     private String recipient;
-    private String category;
+    private Long categoryId; // ID da categoria
+    private String categoryName; // Nome da categoria
     private Transaction.TransactionPaymentType paymentType;
     private Transaction.TransactionStats stats;
     private Transaction.TransactionType type;
@@ -19,8 +21,9 @@ public class TransactionResponseDTO {
     private LocalDate date;
     private UserResponseDTO user;
     private LocalDateTime createdAt;
+    private Category category;
 
-
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -45,12 +48,20 @@ public class TransactionResponseDTO {
         this.recipient = recipient;
     }
 
-    public String getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public Transaction.TransactionPaymentType getPaymentType() {
@@ -107,6 +118,14 @@ public class TransactionResponseDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
 }

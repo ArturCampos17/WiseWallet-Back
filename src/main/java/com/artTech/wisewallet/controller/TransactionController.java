@@ -27,7 +27,7 @@ public class TransactionController {
     public ResponseEntity<Map<String, String>> createTransaction(
             @RequestBody TransactionDTO transactionDTO,
             @RequestHeader("Authorization") String token) {
-        System.out.println("TransactionDTO recebido: " + transactionDTO);
+
         return processTransaction(() -> transactionService.createTransaction(transactionDTO, token),
                 "Transação criada com sucesso!",
                 "Erro ao criar transação");

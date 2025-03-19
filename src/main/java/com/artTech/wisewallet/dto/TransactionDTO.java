@@ -1,5 +1,6 @@
 package com.artTech.wisewallet.dto;
 
+import com.artTech.wisewallet.model.Category;
 import com.artTech.wisewallet.model.Transaction;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TransactionDTO {
-
 
     @JsonProperty("id")
     private Long id;
@@ -23,9 +23,9 @@ public class TransactionDTO {
     @NotBlank(message = "O destinatário é obrigatório")
     private String recipient;
 
-    @JsonProperty("category")
-    @NotBlank(message = "A categoria é obrigatória")
-    private String category;
+    @JsonProperty("categoryId")
+    @NotNull(message = "A categoria é obrigatória")
+    private Long categoryId;
 
     @JsonProperty("paymentType")
     @NotNull(message = "O tipo de pagamento é obrigatório")
@@ -48,30 +48,18 @@ public class TransactionDTO {
     @Positive(message = "O valor deve ser maior que zero")
     private BigDecimal amount;
 
+    // Construtor padrão
     public TransactionDTO() {
     }
 
-    @Override
-    public String toString() {
-        return "TransactionDTO{" +
-                "id='" + id + '\'' +
-                "description='" + description + '\'' +
-                ", recipient='" + recipient + '\'' +
-                ", category='" + category + '\'' +
-                ", paymentType=" + paymentType +
-                ", type=" + type +
-                ", stats=" + stats +
-                ", date=" + date +
-                ", amount=" + amount +
-                '}';
-    }
-
-
+    // Construtor para conversão de Transaction para DTO
     public TransactionDTO(Transaction transaction) {
         this.id = transaction.getId();
         this.description = transaction.getDescription();
         this.recipient = transaction.getRecipient();
-        this.category = transaction.getCategory();
+        if (transaction.getCategory() != null) {
+            this.categoryId = transaction.getCategory().getId();
+        }
         this.paymentType = transaction.getPaymentType();
         this.type = transaction.getType();
         this.stats = transaction.getStats();
@@ -79,9 +67,14 @@ public class TransactionDTO {
         this.amount = transaction.getAmount();
     }
 
-    public Long getId() {return id;}
+    // Getters e Setters
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) {  this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getDescription() {
         return description;
@@ -99,12 +92,12 @@ public class TransactionDTO {
         this.recipient = recipient;
     }
 
-    public String getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Transaction.TransactionPaymentType getPaymentType() {
@@ -146,4 +139,101 @@ public class TransactionDTO {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", recipient='" + recipient + '\'' +
+                ", categoryId=" + categoryId +
+                ", paymentType=" + paymentType +
+                ", type=" + type +
+                ", stats=" + stats +
+                ", date=" + date +
+                ", amount=" + amount +
+                '}';
+    }
+
 }
+
+//
+//    public TransactionDTO(Transaction transaction) {
+//        this.id = transaction.getId();
+//        this.description = transaction.getDescription();
+//        this.recipient = transaction.getRecipient();
+//        this.category = transaction.getCategory();
+//        this.paymentType = transaction.getPaymentType();
+//        this.type = transaction.getType();
+//        this.stats = transaction.getStats();
+//        this.date = transaction.getDate();
+//        this.amount = transaction.getAmount();
+//    }
+//
+//    public Long getId() {return id;}
+//
+//    public void setId(Long id) {  this.id = id; }
+//
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public String getRecipient() {
+//        return recipient;
+//    }
+//
+//    public void setRecipient(String recipient) {
+//        this.recipient = recipient;
+//    }
+//
+//    public Long getCategoryId() {
+//        return categoryId;
+//    }
+//
+//    public void setCategoryId(Long categoryId) {
+//        this.categoryId = categoryId;
+//    }
+//
+//    public Transaction.TransactionPaymentType getPaymentType() {
+//        return paymentType;
+//    }
+//
+//    public void setPaymentType(Transaction.TransactionPaymentType paymentType) {
+//        this.paymentType = paymentType;
+//    }
+//
+//    public Transaction.TransactionType getType() {
+//        return type;
+//    }
+//
+//    public void setType(Transaction.TransactionType type) {
+//        this.type = type;
+//    }
+//
+//    public Transaction.TransactionStats getStats() {
+//        return stats;
+//    }
+//
+//    public void setStats(Transaction.TransactionStats stats) {
+//        this.stats = stats;
+//    }
+//
+//    public LocalDate getDate() {
+//        return date;
+//    }
+//
+//    public void setDate(LocalDate date) {
+//        this.date = date;
+//    }
+//
+//    public BigDecimal getAmount() {
+//        return amount;
+//    }
+//
+//    public void setAmount(BigDecimal amount) {
+//        this.amount = amount;
+//    }

@@ -2,8 +2,10 @@ package com.artTech.wisewallet.service;
 
 import com.artTech.wisewallet.dto.TransactionDTO;
 import com.artTech.wisewallet.dto.TransactionResponseDTO;
+import com.artTech.wisewallet.model.Category;
 import com.artTech.wisewallet.model.Transaction;
 import com.artTech.wisewallet.model.User;
+import com.artTech.wisewallet.repository.CategoryRepository;
 import com.artTech.wisewallet.repository.TransactionRepository;
 import com.artTech.wisewallet.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private JwtService jwtService;
 
 
@@ -37,7 +42,17 @@ public class TransactionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Transaction transaction = Transaction.fromDTO(transactionDTO, user);
+
+        Long categoryId = transactionDTO.getCategoryId();
+        System.out.println("ID da categoria recebida: " + categoryId);
+
+        // Busca a categoria pelo ID
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Categoria com ID " + categoryId + " não encontrada"));
+        System.out.println("Categoria encontrada: " + category);
+
+        Transaction transaction = Transaction.fromDTO(transactionDTO, user, category);
+
         transactionRepository.save(transaction);
         return transaction.toResponseDTO();
     }
@@ -71,10 +86,15 @@ public class TransactionService {
             throw new SecurityException("Você não tem permissão para atualizar esta transação.");
         }
 
+        Long categoryId = transactionDTO.getCategoryId();
+
+        // Buscar a categoria pelo ID
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Categoria com ID " + categoryId + " não encontrada"));
 
         existingTransaction.setDescription(transactionDTO.getDescription());
         existingTransaction.setRecipient(transactionDTO.getRecipient());
-        existingTransaction.setCategory(transactionDTO.getCategory());
+        existingTransaction.setCategory(category);
         existingTransaction.setPaymentType(transactionDTO.getPaymentType());
         existingTransaction.setType(transactionDTO.getType());
         existingTransaction.setStats(transactionDTO.getStats());
