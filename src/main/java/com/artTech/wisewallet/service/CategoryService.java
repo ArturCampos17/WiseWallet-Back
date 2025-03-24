@@ -20,7 +20,7 @@ public class CategoryService {
     @Autowired
     private UserRepository userRepository;
 
-    // Criar uma nova categoria para um usuário
+
     public Category createCategory(Long userId, String categoryName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -35,7 +35,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    // Listar todas as categorias de um usuário
+
     public List<CategoryDTO> getUserCategories(Long userId) {
         List<Category> categories = categoryRepository.findByUserId(userId);
         return categories.stream()
@@ -43,7 +43,6 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    // Atualizar uma categoria existente
     public void updateCategory(Long categoryId, Long userId, String categoryName) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
@@ -56,7 +55,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    // Excluir uma categoria
+
     public void deleteCategory(Long categoryId, Long userId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
@@ -68,7 +67,7 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
-    // Metodo auxiliar para converter uma entidade Category em DTO
+
     private CategoryDTO convertToDTO(Category category) {
         CategoryDTO dto = new CategoryDTO();
         dto.setId(category.getId());

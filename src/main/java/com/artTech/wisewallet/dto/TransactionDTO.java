@@ -1,6 +1,5 @@
 package com.artTech.wisewallet.dto;
 
-import com.artTech.wisewallet.model.Category;
 import com.artTech.wisewallet.model.Transaction;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,7 +47,7 @@ public class TransactionDTO {
     @Positive(message = "O valor deve ser maior que zero")
     private BigDecimal amount;
 
-    // Construtor padrão
+
     public TransactionDTO() {
     }
 
@@ -59,6 +58,8 @@ public class TransactionDTO {
         this.recipient = transaction.getRecipient();
         if (transaction.getCategory() != null) {
             this.categoryId = transaction.getCategory().getId();
+        } else {
+            System.err.println("Categoria é nula para a transação: " + transaction.getId());
         }
         this.paymentType = transaction.getPaymentType();
         this.type = transaction.getType();

@@ -38,7 +38,6 @@ public class SecurityConfig {
                                 "/api/auth/check-auth",
                                 "/api/users/register",
                                 "/api/transactions/**",
-                                //"api/users",
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/profile").authenticated()
