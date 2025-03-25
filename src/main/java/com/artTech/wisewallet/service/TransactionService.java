@@ -42,7 +42,6 @@ public class TransactionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-
         Long categoryId = transactionDTO.getCategoryId();
         System.out.println("ID da categoria recebida: " + categoryId);
 
@@ -51,7 +50,10 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Categoria com ID " + categoryId + " não encontrada"));
         System.out.println("Categoria encontrada: " + category);
 
+        int nextCode = transactionRepository.countByUserId(userId) + 1;
+
         Transaction transaction = Transaction.fromDTO(transactionDTO, user, category);
+        transaction.setCode(nextCode);
 
         transactionRepository.save(transaction);
         return transaction.toResponseDTO();

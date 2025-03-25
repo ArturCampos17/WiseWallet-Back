@@ -11,6 +11,7 @@ public class TransactionResponseDTO {
 
     private Long id;
     private String description;
+    private Integer code;
     private String recipient;
     private Long categoryId; // ID da categoria
     private String categoryName; // Nome da categoria
@@ -38,6 +39,14 @@ public class TransactionResponseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
     public String getRecipient() {

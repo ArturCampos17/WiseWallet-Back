@@ -64,6 +64,9 @@ public class Transaction {
 
     private String description;
 
+    @Column(nullable = false, unique = true)
+    private Integer code;
+
     private String recipient;
 
     @ManyToOne
@@ -113,6 +116,7 @@ public class Transaction {
         TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setId(this.id);
         dto.setDescription(this.description);
+        dto.setCode(this.code);
         dto.setAmount(this.amount);
         dto.setDate(this.date);
         dto.setStats(this.stats);
@@ -147,6 +151,14 @@ public class Transaction {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
     public String getRecipient() {

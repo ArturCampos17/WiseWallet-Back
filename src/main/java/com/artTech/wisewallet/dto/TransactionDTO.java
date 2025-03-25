@@ -18,6 +18,8 @@ public class TransactionDTO {
     @NotBlank(message = "A descrição é obrigatória")
     private String description;
 
+
+
     @JsonProperty("recipient")
     @NotBlank(message = "O destinatário é obrigatório")
     private String recipient;
@@ -55,6 +57,7 @@ public class TransactionDTO {
     public TransactionDTO(Transaction transaction) {
         this.id = transaction.getId();
         this.description = transaction.getDescription();
+
         this.recipient = transaction.getRecipient();
         if (transaction.getCategory() != null) {
             this.categoryId = transaction.getCategory().getId();
@@ -84,6 +87,8 @@ public class TransactionDTO {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
 
     public String getRecipient() {
         return recipient;
@@ -146,6 +151,7 @@ public class TransactionDTO {
         return "TransactionDTO{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
+
                 ", recipient='" + recipient + '\'' +
                 ", categoryId=" + categoryId +
                 ", paymentType=" + paymentType +
